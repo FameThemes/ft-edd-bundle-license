@@ -46,8 +46,10 @@ function ft_edd_sl_store_license( $license_id, $download_id, $payment_id, $type 
                 if ( isset( $prices[ $price_id ] ) ) {
                     if ( $prices[ $price_id ]['license_limit'] ) {
                         $activation_limit =  $prices[ $price_id ]['license_limit'];
-                        $license->__set( 'activation_limit',  $activation_limit );
+                    } else {
+                        $activation_limit = 0;
                     }
+                    $license->__set( 'activation_limit',  $activation_limit );
                 }
             }
         }
