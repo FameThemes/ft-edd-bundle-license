@@ -49,12 +49,18 @@ if ( is_user_logged_in() ) :
                                 <?php echo date_i18n( 'F j, Y', edd_software_licensing()->get_license_expiration( $license->ID ) ); ?>
                             <?php endif; ?>
                         </div>
+
+                        <?php if (  empty( $child_keys ) ) { ?>
                         <span class="edd_sl_limit_label"><?php _e( 'Activations:', 'edd_sl' ); ?>&nbsp;</span>
                         <span class="edd_sl_limit_used"><?php echo edd_software_licensing()->get_site_count( $license->ID ); ?></span>
                         <span class="edd_sl_limit_sep">&nbsp;/&nbsp;</span>
                         <span class="edd_sl_limit_max"><?php echo edd_software_licensing()->license_limit( $license->ID ); ?></span>
+                            <br/>
+                        <?php } ?>
+
+
                         <?php if( ! edd_software_licensing()->force_increase() && 'expired' !== edd_software_licensing()->get_license_status( $license->ID ) && get_post_status( $license->ID ) !== 'draft' ) : ?>
-                            <br/><a href="<?php echo esc_url( add_query_arg( array( 'license_id' => $license->ID, 'action' => 'manage_licenses', 'payment_id' => $payment_id ), get_permalink( edd_get_option( 'purchase_history_page' ) ) ) ); ?>"><?php _e( 'Manage Sites', 'edd_sl' ); ?></a>
+                            <a href="<?php echo esc_url( add_query_arg( array( 'license_id' => $license->ID, 'action' => 'manage_licenses', 'payment_id' => $payment_id ), get_permalink( edd_get_option( 'purchase_history_page' ) ) ) ); ?>"><?php _e( 'Manage Sites', 'edd_sl' ); ?></a>
                         <?php elseif ( 'expired' === edd_software_licensing()->get_license_status( $license->ID ) ) : ?>
                             <br/><span class="edd_sl_no_management"><?php _e( 'Renew to manage sites', 'edd_sl' ); ?></span>
                         <?php else : ?>
@@ -96,28 +102,22 @@ if ( is_user_logged_in() ) :
                                 <input type="text" readonly="readonly" class="edd_sl_license_key" value="<?php echo esc_attr( edd_software_licensing()->get_license_key( $child_key->ID ) ); ?>" />
                                 </td>
                                 <td>
+                                    <span class="edd_sl_status_label"><?php _e( 'Status:', 'edd_sl' ); ?>&nbsp;</span>
+                                    <span class="edd_sl_license_status edd-sl-<?php echo edd_software_licensing()->get_license_status( $child_key->ID ); ?>">
+                                        <?php echo edd_software_licensing()->get_license_status( $child_key->ID ); ?>
+                                    </span>
+                                    <br/>
                                     <span class="edd_sl_limit_label"><?php _e( 'Activations:', 'edd_sl' ); ?>&nbsp;</span>
                                     <span class="edd_sl_limit_used"><?php echo edd_software_licensing()->get_site_count( $child_key->ID ); ?></span>
                                     <span class="edd_sl_limit_sep">&nbsp;/&nbsp;</span>
                                     <span class="edd_sl_limit_max"><?php echo edd_software_licensing()->license_limit( $child_key->ID ); ?></span>
-                                    <?php
-                                    /*
-                                    echo edd_software_licensing()->get_license_limit( null, $child_key->ID );
-                                    echo '=';
-                                    echo edd_software_licensing()->get_license_limit( null, $child_key->ID );
-                                    echo '=';
-                                    echo edd_software_licensing()->get_site_count( $child_key->ID );
-                                    //var_dump( $child_key );
-                                    // activation_limit
-                                    */
-                                    ?>
                                     <br/>
                                     <?php
                                     if ( ! edd_software_licensing()->force_increase() ) {
                                         $url = esc_url( add_query_arg( array( 'license_id' => $child_key->ID, 'action' => 'manage_licenses', 'payment_id' => $payment_id ), get_permalink( edd_get_option( 'purchase_history_page' ) ) ) );
-                                        ?>
-                                        &nbsp;<a href="<?php echo $url; ?>"><?php _e( 'Manage Sites', 'edd_sl' ); ?></a>
-                                        <?php
+                                    ?>
+                                    <a href="<?php echo $url; ?>"><?php _e( 'Manage Sites', 'edd_sl' ); ?></a>
+                                    <?php
                                     }
                                     ?>
                                 </td>
