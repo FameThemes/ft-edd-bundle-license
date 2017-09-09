@@ -20,6 +20,10 @@ if ( is_admin() ) {
 
     }
 
+    function ft_edd_bundle_license_admin_head() {
+        echo '<style type="text/css">.column-limit p, .edd-sl-adjust-limit { display: none !important; } .edd-can-change { border: 1px solid transparent;  cursor: pointer; min-width: 50px; display: inline-block; } .edd-can-change:hover { border-color: #CCCCCC; background: #ededed; }</style>';
+    }
+    add_action( 'admin_head', 'ft_edd_bundle_license_admin_head' );
     add_action('admin_enqueue_scripts', 'ft_edd_bundle_license_scripts');
 }
 
@@ -27,6 +31,33 @@ add_filter( 'edd_template_paths', 'ft_edd_custom_tpl' );
 function ft_edd_custom_tpl( $file_paths ){
     $file_paths[ 20 ] = dirname( __FILE__ ).'/templates';
     return $file_paths;
+}
+
+add_action( 'wp_ajax_ft_edd_bundle_set_activation_limit', 'ft_edd_bundle_set_activation_limit' );
+function ft_edd_bundle_set_activation_limit(){
+
+    if ( ! current_user_can( 'edit_posts' ) ) {
+        wp_send_json_error();
+    }
+
+    if ( ! isset( $_GET['license_id'] ) ) {
+        wp_send_json_error();
+    }
+    $license_id = absint( $_GET['license_id'] );
+    $license = new EDD_SL_License( $license_id );
+    if ( ! $license ) {
+        wp_send_json_error();
+    }
+    if ( ! isset( $_GET['number'] ) ) {
+        wp_send_json_error();
+    }
+    $number = isset( $_GET['number'] ) ? intval( $_GET['number'] ) : '';
+
+    do_action( 'edd_sl_pre_set_activation_limit', $license->ID, $number );
+    $license->update_meta( 'activation_limit', $number );
+    do_action( 'edd_sl_post_set_activation_limit', $license->ID, $number );
+
+    wp_send_json_success();
 }
 
 

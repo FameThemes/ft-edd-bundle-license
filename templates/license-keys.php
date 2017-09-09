@@ -124,10 +124,7 @@ if ( is_user_logged_in() ) :
                             </tr>
                         <?php endforeach; ?>
 
-
-
                 <?php endif; ?>
-
 
             <?php endforeach; ?>
 
